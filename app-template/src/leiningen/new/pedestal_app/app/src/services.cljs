@@ -1,36 +1,21 @@
-(ns {{namespace}}.services)
+(ns {{namespace}}.services
+  (:require [io.pedestal.app.match :as match]
+            [widgetry.log :as l])
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:use [cljs.core.async :only [chan <! >! put! alts! timeout close!]]))
 
-;; The services namespace responsible for communicating with back-end
-;; services. It receives messages from the application's behavior,
-;; makes requests to services and sends responses back to the
-;; behavior.
-;;
-;; This namespace will usually contain a function which can be
-;; configured to receive effect events from the behavior in the file
-;;
-;; app/src/{{sanitized}}/start.cljs
-;;
-;; After creating a new application, set the effect handler function
-;; to receive effects
-;;
-;; (app/consume-effect app services-fn)
-;;
-;; A very simple example of a services function which echoes all events
-;; back to the behavior is shown below.
+(defn inform-set [inform ichan]
+  (.log js/console (str "Send to Server: " (pr-str inform))))
 
-(comment
+(def config
+  (match/index [[inform-set [:services :message] :inform-set]]))
 
-  ;; The services implementation will need some way to send messages
-  ;; back to the application. The queue passed to the services function
-  ;; will convey messages to the application.
-  (defn echo-services-fn [message queue]
-    (put-message queue message))
-
-  )
-
-;; During development, it is helpful to implement services which
-;; simulate communication with the real services. This implementation
-;; can be placed in the file:
-;;
-;; app/src/{{sanitized}}/simulated/services.cljs
-;;
+(defn start-services! [ichan]
+  (let [tchan (chan 10)]
+    (go (while true
+          (let [transform (<! tchan)]
+            (l/log "->" :transform-services :t transform)
+            (doseq [transformation transform]
+              (when-let [handler-fn (ffirst (match/match-items config transformation))]
+                (handler-fn transformation ichan))))))
+    tchan))

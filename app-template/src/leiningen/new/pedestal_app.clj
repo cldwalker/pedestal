@@ -28,11 +28,16 @@
    ["app/assets/javascripts/xpath.js"
     (render "app/assets/javascripts/xpath.js" data)]
 
-   ["app/src/{{sanitized}}/behavior.clj" (render "app/src/behavior.clj" data)]
-   ["app/src/{{sanitized}}/html_templates.clj" (render "app/src/html_templates.clj" data)]
-   ["app/src/{{sanitized}}/rendering.cljs" (render "app/src/rendering.cljs" data)]
+   ["app/src/{{sanitized}}/app.clj" (render "app/src/app.clj" data)]
    ["app/src/{{sanitized}}/start.cljs" (render "app/src/start.cljs" data)]
-   ["app/src/{{sanitized}}/simulated/start.cljs" (render "app/src/simulated/start.cljs" data)]
+   ["app/src/{{sanitized}}/widgets/message.cljs" (render "app/src/widgets/message.cljs" data)]
+
+   ["src/widgetry/log.cljs" (render "src/widgetry/log.cljs")]
+   ["src/widgetry/registry.cljs" (render "src/widgetry/registry.cljs")]
+   ["src/widgetry/rendering.cljs" (render "src/widgetry/rendering.cljs")]
+   ["src/widgetry/root.cljs" (render "src/widgetry/root.cljs")]
+   ["src/widgetry/util.cljs" (render "src/widgetry/util.cljs")]
+   ["src/widgetry/widget.cljs" (render "src/widgetry/widget.cljs")]
 
    ["app/templates/application.html" (render "app/templates/application.html" data)]
    ["app/templates/tooling.html" (render "app/templates/tooling.html" data)]
@@ -55,15 +60,12 @@
 
    ["config/config.edn" (render "config/config.edn" data)]
    ["dev/user.clj" (render "dev/user.clj" data)]
-   ["config/logback.xml" (render "config/logback.xml" data)]
-
-   ["test/{{sanitized}}/behavior_test.clj" (render "test/behavior_test.clj" data)]])
+   ["config/logback.xml" (render "config/logback.xml" data)]])
 
 (defn annotated-project [render data]
   (let [render (renderer "pedestal-app")]
     (apply ->files data
            ["app/src/{{sanitized}}/services.cljs" (render "app/src/services.cljs" data)]
-           ["app/src/{{sanitized}}/simulated/services.cljs" (render "app/src/simulated/services.cljs" data)]
            (base-files render data))))
 
 (defn unannotated-project [render data]
